@@ -1,2 +1,10 @@
+#PyCharm
 .idea/
 venv/*
+
+#compiled files
+*.pyc
+
+#mount and versiondir folders
+mount/
+.versiondir/
