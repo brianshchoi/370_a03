@@ -6,6 +6,7 @@ import logging
 import os
 import sys
 import errno
+from shutil import copy
 
 from fuse import FUSE, FuseOSError, Operations, LoggingMixIn
 
@@ -151,6 +152,16 @@ class VersionFS(LoggingMixIn, Operations):
 
     def release(self, path, fh):
         print '** release', path, '**'
+
+        # After release save versioned file
+        full_path = self._full_path(path)
+
+        # Change to be actual version not just v1
+        versioned_path = full_path + ".v1"
+
+        copy(full_path, versioned_path)
+
+
         return os.close(fh)
 
     def fsync(self, path, fdatasync, fh):

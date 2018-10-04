@@ -1,5 +1,5 @@
 python versionfs.py mount
-Creating version directory.
+Version directory already exists.
 ** create: /one.txt **
 ** flush /one.txt **
 ** write: /one.txt **
@@ -13,10 +13,6 @@ Creating version directory.
 ** release /two.txt **
 ** flush /one.txt **
 ** release /one.txt **
-** open: /two.txt **
-** read: /two.txt **
-** flush /two.txt **
-** release /two.txt **
 ** open: /two.txt **
 ** read: /two.txt **
 ** flush /two.txt **
@@ -46,25 +42,13 @@ Creating version directory.
 ** open: /three.txt **
 ** flush /three.txt **
 ** release /three.txt **
-** open: /.three.txt.swp **
-** read: /.three.txt.swp **
-** flush /.three.txt.swp **
-** release /.three.txt.swp **
 ** create: /.three.txt.swp **
 ** write: /.three.txt.swp **
-** flush /.three.txt.swp **
-** release /.three.txt.swp **
-** open: /.three.txt.swp **
-** read: /.three.txt.swp **
 ** flush /.three.txt.swp **
 ** release /.three.txt.swp **
 ** open: /three.txt **
 ** truncate: /three.txt **
 ** write: /three.txt **
-** flush /three.txt **
-** release /three.txt **
-** open: /three.txt **
-** read: /three.txt **
 ** flush /three.txt **
 ** release /three.txt **
 
