@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 from __future__ import with_statement
 
+import filecmp
 import logging
 
 import os
@@ -166,30 +167,35 @@ class VersionFS(LoggingMixIn, Operations):
 
         # Check if opening a versioned file not to create a version
         versioned_pattern = re.compile(r'\w+\.\w+\.v[0-9]+')
+        swp_pattern = re.compile(r'\.\w+\.\w+\.swp\.v[0-9]+')
 
         if not re.match(versioned_pattern, path):
             for i in range(6, 0, -1):
-                print i
+                old_versioned_path = self._full_path(path) + ".v" + str(i)
+
                 if i == 1:
-                    versioned_path = self._full_path(path)
+                    # Only if versioned file doesnt exist or if the open file isn't equal to v1 file, then make version
+                    if not os.path.isfile(old_versioned_path) \
+                            or not filecmp.cmp(self._full_path(path), old_versioned_path):
+                        copy(self._full_path(path), old_versioned_path)
+
                 else:
                     versioned_path = self._full_path(path) + ".v" + str(i - 1)
 
-                if os.path.isfile(versioned_path):
-                    old_versioned_path = self._full_path(path) + ".v" + str(i)
-                    copy(versioned_path, old_versioned_path)
+                    # Only if previous version is a file, and the two are not equal make a new push old version
+                    # further down
+                    if os.path.isfile(versioned_path) and not filecmp.cmp(versioned_path, old_versioned_path):
+                        old_versioned_path = self._full_path(path) + ".v" + str(i)
+                        copy(versioned_path, old_versioned_path)
+
+        # if re.match(swp_pattern, path):
+        #     os.remove(self._full_path(path))
 
         return os.close(fh)
 
     def fsync(self, path, fdatasync, fh):
         print '** fsync:', path, '**'
         return self.flush(path, fh)
-
-    def remove_version_number(self, dir):
-        # Removes .v[1-6] from the filename
-        sliced = dir[:-3]
-
-        return sliced
 
 
 def main(mountpoint):
