@@ -67,17 +67,13 @@ class VersionFS(LoggingMixIn, Operations):
         if os.path.isdir(full_path):
             dirents.extend(os.listdir(full_path))
 
-
-
         for r in dirents:
             # Matches basic pattern of filename.extension.v1
             # Only show the latest version in mount
-            pattern = re.compile(r'\w+\.\w+\.v1')
+            pattern = re.compile(r'[\w.]+v[0-9]+')
 
-            if (re.match(pattern, r)):
-                dir = self.remove_version_number(r)
-                yield dir
-
+            if not re.match(pattern, r):
+                yield r
 
     def readlink(self, path):
         # print "readlink:", path
@@ -106,8 +102,9 @@ class VersionFS(LoggingMixIn, Operations):
         full_path = self._full_path(path)
         stv = os.statvfs(full_path)
         return dict((key, getattr(stv, key)) for key in ('f_bavail', 'f_bfree',
-            'f_blocks', 'f_bsize', 'f_favail', 'f_ffree', 'f_files', 'f_flag',
-            'f_frsize', 'f_namemax'))
+                                                         'f_blocks', 'f_bsize', 'f_favail', 'f_ffree', 'f_files',
+                                                         'f_flag',
+                                                         'f_frsize', 'f_namemax'))
 
     def unlink(self, path):
         # print "unlink:", path
@@ -165,13 +162,33 @@ class VersionFS(LoggingMixIn, Operations):
     def release(self, path, fh):
         print '** release', path, '**'
 
-        # After release save versioned file
-        full_path = self._full_path(path)
+        # TODO: check if file hasn't actually changed
 
-        # TODO: Change to be actual version not just v1
-        versioned_path = full_path + ".v7"
+        # Check if opening a versioned file not to create a version
+        versioned_pattern = re.compile(r'\w+\.\w\.v[1-6]')
 
-        copy(full_path, versioned_path)
+
+        if not re.match(versioned_pattern, path):
+            for i in range(1, 5):
+                versioned_path = self._full_path(path) + ".v" + str(i)
+
+                print versioned_path
+                print "debug"
+                if os.path.isfile(versioned_path):
+                    print "debug2"
+                    j = i + 1
+                    old_versioned_path = self._full_path(path) + ".v" + str(j)
+
+                    print old_versioned_path
+                    copy(versioned_path, old_versioned_path)
+                    break
+                else:
+                    print "break"
+                    break
+
+
+            newest_version = self._full_path(path) + ".v1"
+            copy(self._full_path(path), newest_version)
 
         return os.close(fh)
 
