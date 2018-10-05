@@ -165,30 +165,19 @@ class VersionFS(LoggingMixIn, Operations):
         # TODO: check if file hasn't actually changed
 
         # Check if opening a versioned file not to create a version
-        versioned_pattern = re.compile(r'\w+\.\w\.v[1-6]')
-
+        versioned_pattern = re.compile(r'\w+\.\w+\.v[0-9]+')
 
         if not re.match(versioned_pattern, path):
-            for i in range(1, 5):
-                versioned_path = self._full_path(path) + ".v" + str(i)
-
-                print versioned_path
-                print "debug"
-                if os.path.isfile(versioned_path):
-                    print "debug2"
-                    j = i + 1
-                    old_versioned_path = self._full_path(path) + ".v" + str(j)
-
-                    print old_versioned_path
-                    copy(versioned_path, old_versioned_path)
-                    break
+            for i in range(6, 0, -1):
+                print i
+                if i == 1:
+                    versioned_path = self._full_path(path)
                 else:
-                    print "break"
-                    break
+                    versioned_path = self._full_path(path) + ".v" + str(i - 1)
 
-
-            newest_version = self._full_path(path) + ".v1"
-            copy(self._full_path(path), newest_version)
+                if os.path.isfile(versioned_path):
+                    old_versioned_path = self._full_path(path) + ".v" + str(i)
+                    copy(versioned_path, old_versioned_path)
 
         return os.close(fh)
 
