@@ -184,7 +184,7 @@ class VersionFS(LoggingMixIn, Operations):
 
                     # Only if previous version is a file, and the two are not equal make a new push old version
                     # further down
-                    if os.path.isfile(versioned_path) and not filecmp.cmp(versioned_path, old_versioned_path):
+                    if os.path.isfile(versioned_path):
                         old_versioned_path = self._full_path(path) + ".v" + str(i)
                         copy(versioned_path, old_versioned_path)
 
