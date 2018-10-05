@@ -6,6 +6,7 @@ import logging
 import os
 import sys
 import errno
+import re
 from shutil import copy
 
 from fuse import FUSE, FuseOSError, Operations, LoggingMixIn
@@ -55,7 +56,8 @@ class VersionFS(LoggingMixIn, Operations):
         full_path = self._full_path(path)
         st = os.lstat(full_path)
         return dict((key, getattr(st, key)) for key in ('st_atime', 'st_ctime',
-                     'st_gid', 'st_mode', 'st_mtime', 'st_nlink', 'st_size', 'st_uid'))
+                                                        'st_gid', 'st_mode', 'st_mtime', 'st_nlink', 'st_size',
+                                                        'st_uid'))
 
     def readdir(self, path, fh):
         # print "readdir:", path
@@ -64,8 +66,18 @@ class VersionFS(LoggingMixIn, Operations):
         dirents = ['.', '..']
         if os.path.isdir(full_path):
             dirents.extend(os.listdir(full_path))
+
+
+
         for r in dirents:
-            yield r
+            # Matches basic pattern of filename.extension.v1
+            # Only show the latest version in mount
+            pattern = re.compile(r'\w+\.\w+\.v1')
+
+            if (re.match(pattern, r)):
+                dir = self.remove_version_number(r)
+                yield dir
+
 
     def readlink(self, path):
         # print "readlink:", path
@@ -156,11 +168,10 @@ class VersionFS(LoggingMixIn, Operations):
         # After release save versioned file
         full_path = self._full_path(path)
 
-        # Change to be actual version not just v1
-        versioned_path = full_path + ".v1"
+        # TODO: Change to be actual version not just v1
+        versioned_path = full_path + ".v7"
 
         copy(full_path, versioned_path)
-
 
         return os.close(fh)
 
@@ -168,9 +179,16 @@ class VersionFS(LoggingMixIn, Operations):
         print '** fsync:', path, '**'
         return self.flush(path, fh)
 
+    def remove_version_number(self, dir):
+        # Removes .v[1-6] from the filename
+        sliced = dir[:-3]
+
+        return sliced
+
 
 def main(mountpoint):
     FUSE(VersionFS(), mountpoint, nothreads=True, foreground=True)
+
 
 if __name__ == '__main__':
     # logging.basicConfig(level=logging.DEBUG)
