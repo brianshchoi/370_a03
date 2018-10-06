@@ -163,33 +163,44 @@ class VersionFS(LoggingMixIn, Operations):
     def release(self, path, fh):
         print '** release', path, '**'
 
-        # TODO: check if file hasn't actually changed
-
         # Check if opening a versioned file not to create a version
-        versioned_pattern = re.compile(r'\w+\.\w+\.v[0-9]+')
-        swp_pattern = re.compile(r'\.\w+\.\w+\.swp\.v[0-9]+')
+        versioned_pattern = re.compile(r'/\w+\.\w+\.v[0-9]+')
+        swp_pattern = re.compile(r'/\.\w+\.\w+\.swp')
 
-        if not re.match(versioned_pattern, path):
-            for i in range(6, 0, -1):
-                old_versioned_path = self._full_path(path) + ".v" + str(i)
+        # If not a versioned file, and swp file make versions
+        if not re.match(versioned_pattern, path) and not re.match(swp_pattern, path):
+            for x in range(6, 0, -1):
+                older_path = self._full_path(path) + ".v" + str(x)
+                newer_path = self._full_path(path) + ".v" + str(x - 1)
 
-                if i == 1:
-                    # Only if versioned file doesnt exist or if the open file isn't equal to v1 file, then make version
-                    if not os.path.isfile(old_versioned_path) \
-                            or not filecmp.cmp(self._full_path(path), old_versioned_path):
-                        copy(self._full_path(path), old_versioned_path)
-
+                if x == 1:
+                    newer_path = self._full_path(path)
+                    if not os.path.isfile(older_path) or \
+                            (os.path.isfile(older_path) and not filecmp.cmp(newer_path, older_path)):
+                        copy(newer_path, older_path)
+                elif x == 2:
+                    if os.path.isfile(newer_path) and not filecmp.cmp(newer_path, self._full_path(path)):
+                        copy(newer_path, older_path)
                 else:
-                    versioned_path = self._full_path(path) + ".v" + str(i - 1)
+                    if os.path.isfile(newer_path):
+                        copy(newer_path, older_path)
 
-                    # Only if previous version is a file, and the two are not equal make a new push old version
-                    # further down
-                    if os.path.isfile(versioned_path):
-                        old_versioned_path = self._full_path(path) + ".v" + str(i)
-                        copy(versioned_path, old_versioned_path)
-
-        # if re.match(swp_pattern, path):
-        #     os.remove(self._full_path(path))
+        #
+        # for i in range(6, 0, -1):
+        #     old_versioned_path = self._full_path(path) + ".v" + str(i)
+        #     if i == 1:
+        #         # Only if versioned file doesnt exist or if the open file isn't equal to v1 file, then make version
+        #         if not os.path.isfile(old_versioned_path) \
+        #                 or not filecmp.cmp(self._full_path(path), old_versioned_path, shallow=False):
+        #             copy(self._full_path(path), old_versioned_path)
+        #
+        #     else:
+        #         versioned_path = self._full_path(path) + ".v" + str(i - 1)
+        #
+        #         # Only if previous version is a file, and the two are not equal make a new push old version
+        #         # further down
+        #         if os.path.isfile(versioned_path) and (not os.path.isfile(old_versioned_path) or i == 6):
+        #             copy(versioned_path, old_versioned_path)
 
         return os.close(fh)
 

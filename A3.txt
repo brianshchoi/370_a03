@@ -1,10 +1,13 @@
 python versionfs.py mount
 Version directory already exists.
+1. echo "one1" > mount/one.txt
 ** create: /one.txt **
 ** flush /one.txt **
 ** write: /one.txt **
 ** flush /one.txt **
 ** release /one.txt **
+
+2. cp mount/one.txt mount/two.txt
 ** open: /one.txt **
 ** create: /two.txt **
 ** read: /one.txt **
@@ -13,10 +16,14 @@ Version directory already exists.
 ** release /two.txt **
 ** flush /one.txt **
 ** release /one.txt **
+
+3. cat mount/two.txt
 ** open: /two.txt **
 ** read: /two.txt **
 ** flush /two.txt **
 ** release /two.txt **
+
+4. cat mount/one.txt mount/two.txt > mount/three.txt
 ** create: /three.txt **
 ** flush /three.txt **
 ** open: /one.txt **
@@ -31,6 +38,8 @@ Version directory already exists.
 ** release /two.txt **
 ** flush /three.txt **
 ** release /three.txt **
+
+5. nano mount/three.txt
 ** create: /.three.txt.swp **
 ** write: /.three.txt.swp **
 ** flush /.three.txt.swp **
