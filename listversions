@@ -2,6 +2,9 @@
 import os
 import sys
 
+# listversions executable
+# Created by Brian Choi - scho602
+
 root = os.path.join(os.getcwd(), 'mount')
 
 
@@ -12,7 +15,7 @@ def load_file():
 
         count = 0
 
-        for i in range(1,7):
+        for i in range(1, 7):
             if os.path.isfile(full_filename + ".v" + str(i)):
                 print filename + ".v" + str(i)
                 count = count + 1
@@ -20,7 +23,7 @@ def load_file():
         if count == 0:
             print 'No versions available for', filename
 
-    except:
+    except TypeError:
         e = sys.exc_info()[0]
         print e
         print 'Likely an invalid number of arguments. Use the following format:'
@@ -36,4 +39,3 @@ def full_path(partial):
 
 if __name__ == '__main__':
     load_file()
-

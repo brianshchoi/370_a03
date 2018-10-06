@@ -12,6 +12,8 @@ from shutil import copy
 
 from fuse import FUSE, FuseOSError, Operations, LoggingMixIn
 
+# versionfs.py
+# Modified by Brian Choi - scho602
 
 class VersionFS(LoggingMixIn, Operations):
     def __init__(self):
