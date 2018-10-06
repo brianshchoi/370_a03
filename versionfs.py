@@ -179,8 +179,8 @@ class VersionFS(LoggingMixIn, Operations):
                     # Or if it does exist, but v1 is different from current working version, then copy it
                     if not os.path.isfile(version_1_path) \
                             or (os.path.isfile(version_1_path)
-                                and not filecmp.cmp(original_file, version_1_path, shallow=False)):
-                        copy(newer_path, older_path)
+                                and not filecmp.cmp(original_file, version_1_path)):
+                        copy(original_file, version_1_path)
 
                 else:
                     # If previous version exists and the original changed, copy the previous version into "
