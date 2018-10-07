@@ -1,0 +1,31 @@
+#!/usr/bin/env python
+import os
+import sys
+
+# rmversions executable
+# Created by Brian Choi - scho602
+
+root = os.path.join(os.getcwd(), 'mount')
+filename = sys.argv[1]
+
+
+def delete_other_versions():
+    for i in range(2, 7):
+        os.remove(versioned_filename(i))
+
+
+def versioned_filename(number):
+    return full_path(filename) + ".v" + str(number)
+
+
+def full_path(partial):
+    if partial.startswith("/"):
+        partial = partial[1:]
+    path = os.path.join(root, partial)
+    return path
+
+
+if __name__ == '__main__':
+    # check_version_1_exists()
+    delete_other_versions()
+

@@ -37,9 +37,11 @@ def load_file():
             if os.path.isfile(versioned_filename(7)):
                 os.remove(versioned_filename(7))
 
+            print 'Version', version, 'is now the current version'
+
     except IOError:
         e = sys.exc_info()[0]
-        print 'Version', sys.argv[2], 'does not exist'
+        print 'Version', version, 'does not exist'
     except TypeError:
         e = sys.exc_info()[0]
         print e
