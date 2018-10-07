@@ -1,0 +1,21 @@
+#!/usr/bin/env python
+import os
+import subprocess
+import sys
+
+# shutdownversions executable
+# Created by Brian Choi - scho602
+
+
+def delete_versiondir():
+    subprocess.call(["rm", "-r", ".versiondir/"])
+
+
+def unmount():
+    subprocess.call(['fusermount', '-u', 'mount'])
+
+
+if __name__ == '__main__':
+    delete_versiondir()
+    unmount()
+
