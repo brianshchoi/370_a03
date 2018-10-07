@@ -14,7 +14,8 @@ version = sys.argv[2]
 def load_file():
     try:
         version_pattern = re.compile(r'[1-6]')
-        copying_file = versioned_filename(int(version) + 1)
+        copying_file = versioned_filename(int(version))
+        original_file = full_path(filename)
 
         if not re.match(version_pattern, version):
             print 'Invalid version number. Choose between 1-6'
@@ -23,20 +24,7 @@ def load_file():
             print 'Version 1 is already the current version'
 
         else:
-            # for i in range(7, 0, -1):
-                # if i == 1:
-                    # copy(full_path(filename), versioned_filename(i))
-                # else:
-                    # Only copy if the previous version exists
-                    # if os.path.isfile(versioned_filename(i - 1)) and not os.path.isfile(versioned_filename(i)):
-                        # copy(versioned_filename(i - 1), versioned_filename(i))
-
-            # Copy the file which has been moved down by 1
-            copy(copying_file, full_path(filename))
-            # Remove the 7th version as only 6 allowed
-            if os.path.isfile(versioned_filename(7)):
-                os.remove(versioned_filename(7))
-
+            copy(copying_file, original_file)
             print 'Version', version, 'is now the current version'
 
     except IOError:
