@@ -1,0 +1,60 @@
+#!/usr/bin/env python
+import os
+import re
+import sys
+from shutil import copy
+
+# mkcurrent executable
+# Created by Brian Choi - scho602
+
+root = os.path.join(os.getcwd(), 'mount')
+filename = sys.argv[1]
+version = sys.argv[2]
+
+def load_file():
+    try:
+        version_pattern = re.compile(r'[1-6]')
+        copying_file = versioned_filename(int(version) + 1)
+
+        if not re.match(version_pattern, version):
+            print 'Invalid version number. Choose between 1-6'
+
+        elif version == "1":
+            print 'Version 1 is already the current version'
+
+        else:
+            # for i in range(7, 0, -1):
+                # if i == 1:
+                    # copy(full_path(filename), versioned_filename(i))
+                # else:
+                    # Only copy if the previous version exists
+                    # if os.path.isfile(versioned_filename(i - 1)) and not os.path.isfile(versioned_filename(i)):
+                        # copy(versioned_filename(i - 1), versioned_filename(i))
+
+            # Copy the file which has been moved down by 1
+            copy(copying_file, full_path(filename))
+            # Remove the 7th version as only 6 allowed
+            if os.path.isfile(versioned_filename(7)):
+                os.remove(versioned_filename(7))
+
+    except IOError:
+        e = sys.exc_info()[0]
+        print 'Version', sys.argv[2], 'does not exist'
+    except TypeError:
+        e = sys.exc_info()[0]
+        print e
+
+
+def versioned_filename(number):
+    return full_path(filename) + ".v" + str(number)
+
+
+def full_path(partial):
+    if partial.startswith("/"):
+        partial = partial[1:]
+    path = os.path.join(root, partial)
+    return path
+
+
+if __name__ == '__main__':
+    load_file()

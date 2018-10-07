@@ -182,12 +182,14 @@ class VersionFS(LoggingMixIn, Operations):
                     if not os.path.isfile(version_1_path) \
                             or (os.path.isfile(version_1_path)
                                 and not filecmp.cmp(original_file, version_1_path)):
+                        print 'copied on 1'
                         copy(original_file, version_1_path)
 
                 else:
                     # If previous version exists and the original changed, copy the previous version into "
                     # next version number
                     if os.path.isfile(newer_path) and not filecmp.cmp(original_file, version_1_path):
+                        print 'copied'
                         copy(newer_path, older_path)
 
         return os.close(fh)
