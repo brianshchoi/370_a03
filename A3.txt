@@ -1,5 +1,7 @@
-python versionfs.py mount
-Version directory already exists.
+Brian Choi - scho602
+SOFTENG 370 - Assignment 3
+
+Part 1 Output
 1. echo "one1" > mount/one.txt
 ** create: /one.txt **
 ** flush /one.txt **
@@ -60,4 +62,16 @@ Version directory already exists.
 ** write: /three.txt **
 ** flush /three.txt **
 ** release /three.txt **
+
+
+Pros and Cons of Deleting all versions if a file is deleted in the mount directory
+Pros:
+    - If the delete was intentional and you don't want to keep versions of the file anymore, you do not have to clean up
+      the extra versions that were created
+
+Cons:
+    - If the deletion of a file was a mistake, it is much harder to retrieve the versioned files that could've restored
+      the user's history.
+
+
 
